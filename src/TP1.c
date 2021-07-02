@@ -111,6 +111,7 @@ void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir){
 bool_t verificarTiempo(tick_t tiempo){
 	static tick_t contador = 0;
 	tick_t numBase = tiempo / BASE_TIEMPO;
+	delay(BASE_TIEMPO);
 	if (contador > numBase){
 		contador = 0;
 		return true;

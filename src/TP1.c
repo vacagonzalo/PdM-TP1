@@ -18,21 +18,31 @@
 
 /*=====[Main function, program entry point after power on or reset]==========*/
 
+enum sentido{ascendente, descendente};
 bool_t  encenderLed(gpioMap_t led);
 bool_t  apagarLeds(gpioMap_t *leds, int8_t len);
 bool_t leerTecla (gpioMap_t tecla);
-void activarSecuencia(gpioMap_t *psecuencia, int8_t len);
+void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir);
 
 int main( void )
 {
 	gpioMap_t leds[] = {LEDB, LED1, LED2, LED3};
 	int8_t lenLeds = sizeof(leds)/sizeof(gpioMap_t);
+	enum sentido dir = ascendente;
+
    // ----- Setup -----------------------------------
    boardInit();
 
    // ----- Repeat for ever -------------------------
    while( true ) {
-      activarSecuencia(leds, lenLeds);
+	  if (leerTecla(TEC1)){
+		  dir = descendente;
+	  }
+	  if (leerTecla(TEC4)){
+		  dir = ascendente;
+	  }
+
+      activarSecuencia(leds, lenLeds, dir);
       delay(500);
       apagarLeds(leds, lenLeds);
       delay(500);
@@ -65,13 +75,21 @@ bool_t leerTecla (gpioMap_t tecla){
 }
 
 /* Esta funcion enciende el siguiente led de la secuencia*/
-void activarSecuencia(gpioMap_t *psecuencia, int8_t len){
+void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir){
 	static int8_t pos = 0;
 	int8_t ultimo = len - 1;
 	encenderLed(psecuencia[pos]);
-	if (pos < ultimo){
-		++pos;
-	} else {
-		pos = 0;
+	if (dir == ascendente){
+		if (pos < ultimo){
+			++pos;
+		} else {
+			pos = 0;
+		}
+	} else{
+		if (pos > 0){
+			--pos;
+		} else{
+			pos = ultimo;
+		}
 	}
 }

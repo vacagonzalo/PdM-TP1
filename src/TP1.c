@@ -52,7 +52,7 @@ bool_t  encenderLed(gpioMap_t led){
 bool_t  apagarLeds(gpioMap_t *leds, int8_t len){
 	bool_t state = TRUE;
 	for (int i = 0; i < len; ++i){
-		if (!gpioWrite(*leds[i], OFF)){
+		if (!gpioWrite(leds[i], OFF)){
 			state = FALSE;
 		}
 	}
@@ -68,7 +68,7 @@ bool_t leerTecla (gpioMap_t tecla){
 void activarSecuencia(gpioMap_t *psecuencia, int8_t len){
 	static int8_t pos = 0;
 	int8_t ultimo = len - 1;
-	encenderLed(*psecuencia[pos]);
+	encenderLed(psecuencia[pos]);
 	if (pos < ultimo){
 		++pos;
 	} else {

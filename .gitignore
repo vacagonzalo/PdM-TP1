@@ -1,6 +1,8 @@
 # Carpeta de compilación del proyecto CIAA
-
 out/
+
+# Carpeta de configuración personal
+.vscode/
 
 # Prerequisites
 *.d

@@ -1,6 +1,7 @@
 /*=============================================================================
- * Author: Gonzalo Nahuel Vaca <vacagonzalo@gmail.com>
- * Date: 2021/06/30
+ * Author1: Gonzalo Nahuel Vaca <vacagonzalo@gmail.com>
+ * Author2: Ismael Minchala Avila <ismael.minchala@gmail.com>
+ * Date: 2021/07/02
  *===========================================================================*/
 
 /*=====[Inclusions of function dependencies]=================================*/
@@ -21,31 +22,43 @@
 enum sentido{ascendente, descendente};
 bool_t  encenderLed(gpioMap_t led);
 bool_t  apagarLeds(gpioMap_t *leds, int8_t len);
-bool_t leerTecla (gpioMap_t tecla);
+bool_t  leerTecla (gpioMap_t tecla);
+bool_t  verificarTiempo(tick_t tiempo);
 void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir);
+const tick_t RAPIDO = 150;
+const tick_t LENTO = 750;
+const tick_t BASE_TIEMPO = 10;
 
 int main( void )
 {
 	gpioMap_t leds[] = {LEDB, LED1, LED2, LED3};
 	int8_t lenLeds = sizeof(leds)/sizeof(gpioMap_t);
 	enum sentido dir = ascendente;
+	tick_t tiempo = RAPIDO;
+	bool_t finTiempo = true;
 
    // ----- Setup -----------------------------------
    boardInit();
 
    // ----- Repeat for ever -------------------------
    while( true ) {
-	  if (leerTecla(TEC1)){
-		  dir = descendente;
-	  }
-	  if (leerTecla(TEC4)){
-		  dir = ascendente;
-	  }
-
-      activarSecuencia(leds, lenLeds, dir);
-      delay(500);
-      apagarLeds(leds, lenLeds);
-      delay(500);
+	   if (leerTecla(TEC1)){
+		   dir = descendente;
+	   }
+	   if (leerTecla(TEC4)){
+		   dir = ascendente;
+	   }
+	   if (leerTecla(TEC2)){
+		   tiempo = RAPIDO;
+	   }
+	   if (leerTecla(TEC3)){
+		   tiempo = LENTO;
+	   }
+	   if (finTiempo){
+		   activarSecuencia(leds, lenLeds, dir);
+		   finTiempo = false;
+	   }
+	   finTiempo = verificarTiempo(tiempo);
    }
 
    // YOU NEVER REACH HERE, because this program runs directly or on a
@@ -78,6 +91,7 @@ bool_t leerTecla (gpioMap_t tecla){
 void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir){
 	static int8_t pos = 0;
 	int8_t ultimo = len - 1;
+	apagarLeds(psecuencia, len);
 	encenderLed(psecuencia[pos]);
 	if (dir == ascendente){
 		if (pos < ultimo){
@@ -91,5 +105,17 @@ void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir){
 		} else{
 			pos = ultimo;
 		}
+	}
+}
+
+bool_t verificarTiempo(tick_t tiempo){
+	static int8_t contador = 0;
+	int8_t numBase = tiempo / BASE_TIEMPO;
+	if (contador > numBase){
+		contador = 0;
+		return true;
+	} else{
+		++contador;
+		return false;
 	}
 }

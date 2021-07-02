@@ -1,3 +1,7 @@
+# Carpeta de compilación del proyecto CIAA
+
+out/
+
 # Prerequisites
 *.d
 

@@ -97,8 +97,12 @@ bool_t leerTecla (gpioMap_t tecla){
 void activarSecuencia(controlSecuencia_t *controlador){
 	static int8_t pos = 0;
 	int8_t ultimo = controlador->tamano - 1;
-	apagarLeds(controlador);
-	encenderLed(controlador->ptrLed[pos]);
+	if(!apagarLeds(controlador)) {
+		printf("Error: no se apagaron todos los LEDs\n\r");
+	}
+	if(!encenderLed(controlador->ptrLed[pos])) {
+		printf("Error: el miembro %d de la secuencia no se pudo encender\n\r", pos);
+	}
 	if (controlador->direccion == ascendente){
 		if (pos < ultimo){
 			++pos;

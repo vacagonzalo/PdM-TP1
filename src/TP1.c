@@ -39,10 +39,9 @@ int main( void )
 {
 	const gpioMap_t leds[] = {LEDB, LED1, LED2, LED3};
 	const int8_t lenLeds = sizeof(leds)/sizeof(gpioMap_t);
-	enum sentido dir = ascendente;
 	tick_t tiempo = RAPIDO;
 	bool_t finTiempo = true;
-	controlSecuencia_t controlLeds = {leds, lenLeds, dir};
+	controlSecuencia_t controlLeds = {leds, lenLeds, ascendente};
 
    // ----- Setup -----------------------------------
    boardInit();
@@ -50,10 +49,10 @@ int main( void )
    // ----- Repeat for ever -------------------------
    while( true ) {
 	   if (leerTecla(TEC1)){
-		   dir = descendente;
+		   controlLeds.direccion = descendente;
 	   }
 	   if (leerTecla(TEC4)){
-		   dir = ascendente;
+		   controlLeds.direccion = ascendente;
 	   }
 	   if (leerTecla(TEC2)){
 		   tiempo = RAPIDO;

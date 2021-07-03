@@ -1,11 +1,17 @@
 PdM - Práctica clase 1
 ======================
+Universidad de Buenos Aires
+---
+Falcultad de Ingeniería
+---
+Especialización en sistemas embebidos
+---
 
 Luis Ismael Minchala Avila (ismael.minchala@ucuenca.edu.ec)
 
 Gonzalo Nahuel Vaca (vacagonzalo@gmail.com)
 
-# Objetivo
+# Objetivos
 
 ## Resumen
 
@@ -63,3 +69,8 @@ typedef struct {
     const unit8_t const* ptrUltimoLed;
 } controlSecuencia_t;
 ```
+
+# Requisitos
+
+* EDU-CIAA
+* Cable USB

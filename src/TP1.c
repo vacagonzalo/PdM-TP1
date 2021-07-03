@@ -20,22 +20,29 @@
 /*=====[Main function, program entry point after power on or reset]==========*/
 
 enum sentido{ascendente, descendente};
+typedef struct {
+    const gpioMap_t * ptrLed;
+    const int8_t tamano;
+    enum sentido direccion;
+} controlSecuencia_t;
 bool_t  encenderLed(gpioMap_t led);
-bool_t  apagarLeds(gpioMap_t *leds, int8_t len);
+bool_t  apagarLeds(controlSecuencia_t *controlador);
 bool_t  leerTecla (gpioMap_t tecla);
 bool_t  verificarTiempo(tick_t tiempo);
-void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir);
+void activarSecuencia(controlSecuencia_t *controlador);
 const tick_t RAPIDO = 150;
 const tick_t LENTO = 750;
 const tick_t BASE_TIEMPO = 10;
 
+
 int main( void )
 {
-	gpioMap_t leds[] = {LEDB, LED1, LED2, LED3};
-	int8_t lenLeds = sizeof(leds)/sizeof(gpioMap_t);
+	const gpioMap_t leds[] = {LEDB, LED1, LED2, LED3};
+	const int8_t lenLeds = sizeof(leds)/sizeof(gpioMap_t);
 	enum sentido dir = ascendente;
 	tick_t tiempo = RAPIDO;
 	bool_t finTiempo = true;
+	controlSecuencia_t controlLeds = {leds, lenLeds, dir};
 
    // ----- Setup -----------------------------------
    boardInit();
@@ -55,7 +62,7 @@ int main( void )
 		   tiempo = LENTO;
 	   }
 	   if (finTiempo){
-		   activarSecuencia(leds, lenLeds, dir);
+		   activarSecuencia(&controlLeds);
 		   finTiempo = false;
 	   }
 	   finTiempo = verificarTiempo(tiempo);
@@ -72,11 +79,11 @@ bool_t  encenderLed(gpioMap_t led){
 	return gpioRead(led);
 }
 
-bool_t  apagarLeds(gpioMap_t *leds, int8_t len){
-	bool_t state = TRUE;
-	for (int i = 0; i < len; ++i){
-		if (!gpioWrite(leds[i], OFF)){
-			state = FALSE;
+bool_t  apagarLeds(controlSecuencia_t *controlador){
+	bool_t state = true;
+	for (int i = 0; i < controlador->tamano; ++i){
+		if (!gpioWrite(controlador->ptrLed[i], OFF)){
+			state = false;
 		}
 	}
 	return state;
@@ -88,12 +95,12 @@ bool_t leerTecla (gpioMap_t tecla){
 }
 
 /* Esta funcion enciende el siguiente led de la secuencia*/
-void activarSecuencia(gpioMap_t *psecuencia, int8_t len, enum sentido dir){
+void activarSecuencia(controlSecuencia_t *controlador){
 	static int8_t pos = 0;
-	int8_t ultimo = len - 1;
-	apagarLeds(psecuencia, len);
-	encenderLed(psecuencia[pos]);
-	if (dir == ascendente){
+	int8_t ultimo = controlador->tamano - 1;
+	apagarLeds(controlador);
+	encenderLed(controlador->ptrLed[pos]);
+	if (controlador->direccion == ascendente){
 		if (pos < ultimo){
 			++pos;
 		} else {
